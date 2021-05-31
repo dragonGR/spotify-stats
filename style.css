@@ -1,0 +1,62 @@
+body {
+  background-color: #e8f5e9;
+}
+
+.artist {
+  display: inline-block;
+  padding: 10px;
+}
+
+img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+h4 {
+  margin-top: 0px;
+}
+
+.track {
+  display: inline-block;
+  padding: 10px;
+}
+
+.sidebar {
+  min-width: 250px;
+}
+
+#title {
+  margin-bottom: 0px;
+}
+
+#author {
+  margin-top: 0px;
+}
+
+#results-container {
+  text-align: center;
+}
+
+.item {
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+@media only screen and (max-width: 991px) and (min-width: 768px) {
+  img {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  img {
+    width: 200px;
+    height: 200px;
+  }
+}

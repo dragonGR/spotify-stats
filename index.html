@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Metadatas -->
+  <title>Spotify Stats | dragonGR</title>
+  <meta name="author" content="dragonGR">
+  <meta name="viewport" content="width=device-width", initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <!-- JQuery -->
+  <script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"
+  ></script>
+</head>
+<body>
+  <br>
+  <div class="ui doubling stackable grid container">
+     <div class="three wide column centered sidebar">
+        <div class="ui segments centered">
+           <div class="ui segment">
+              <p id="instructions">
+                 <br><i class="music icon"></i>Please authenticate with your Spotify account to see your top tracks and artists.
+              </p>
+              <p>
+                 <small><i class="circle icon"></i>Only your listening activity is accessed&mdash;no data is stored</small>
+              </p>
+           </div>
+           <div class="ui padded segment" id="login">
+              <button class="ui black fluid button" id="login-button" onclick="authorize()"><i class="sync icon"></i>Login</button>
+           </div>
+           <div class="ui padded segment" id="button-segment">
+              <button class="ui black fluid button" id="track-button" onclick="getTopTracks()"><i class="sync icon"></i>Get top tracks</button>
+              <br>
+              <button class="ui black fluid button" id="artist-button" onclick="getTopArtists()"><i class="sync icon"></i>Get top artists</button>
+           </div>
+           <div class="ui padded segment" id="timeForm">
+              <div class="ui form">
+                 <div class="grid" id="timeEntry">
+                    <p>Time:</p>
+                    <div class="field">
+                       <div class="ui radio checkbox">
+                          <input type="radio" name="time" value="short_term" checked="checked">
+                          <label>Last 4 weeks</label>
+                       </div>
+                    </div>
+                    <div class="field">
+                       <div class="ui radio checkbox">
+                          <input type="radio" name="time" value="medium_term">
+                          <label>Last 6 months</label>
+                       </div>
+                    </div>
+                    <div class="field">
+                       <div class="ui radio checkbox">
+                          <input type="radio" name="time" value="long_term">
+                          <label>All time</label>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+           <div class="ui padded segment form" id="numForm">
+              <p id="number">Number of results: 20</p>
+              <input type="range" min="1" max="50" value="20" class="slider" id="numResponses">
+           </div>
+        </div>
+     </div>
+     <div class="twelve wide column centered">
+        <br>
+        <div class="ui eight column centered" id="results-container">
+           <div id="results-header"></div>
+           <br>
+           <div class="ui stackable five column grid container content" id="results"></div>
+        </div>
+     </div>
+  </div>
+  <script src="head.js"></script>
+</html>
