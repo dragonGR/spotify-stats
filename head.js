@@ -212,7 +212,6 @@ function enableControls() {
 function disableControls() {
   $('#button-segment').addClass("disabled");
   $('#track-button').addClass("disabled");
-  $('#build-playlist-button').addClass("disabled");
   $('#artist-button').addClass("disabled");
   $('#timeForm').addClass("disabled");
   $('#numForm').addClass("disabled");
