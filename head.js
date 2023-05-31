@@ -1,8 +1,6 @@
 // Initialize vars
-let playlist_url = null;
 let access_token = null;
 let user_id = null;
-let playlist_id = null;
 let songsdisplayed = false;
 let artistsdisplayed = false;
 let time_range = 'short_term';
@@ -44,13 +42,9 @@ function getHashValue(key) {
     key = key.toLowerCase();
   }
   const keyAndHash = location.hash.match(new RegExp(key + '=([^&]*)'));
-  let value = '';
-
-  if (keyAndHash) {
-    value = keyAndHash[1];
-  }
+  const value = keyAndHash ? keyAndHash[1] : '';
   return value;
-};
+}
 
 function updateRange() {
   time_range = $('input[name=time]:checked', '#timeForm').val();
@@ -63,6 +57,7 @@ function updateRange() {
       break;
     case 'long_term':
       time_range_display = 'all time';
+      break;
   }
 }
 
@@ -74,8 +69,9 @@ function refresh() {
     getTopArtists();
   }
 }
+
 function checkWidth() {
-  if ($(window).width() < 1200) {
+  if (window.innerWidth < 1200) {
     $('html, body').animate({
       scrollTop: $("#results-container").offset().top
     }, 500);
@@ -94,7 +90,7 @@ function getUserId() {
       success: function(response) {
         user_id = response.id;
       },
-      error: function(jqXHR, textStatus, errorThrown) {
+      error: (jqXHR, textStatus, errorThrown) => {
         ifError(jqXHR.status);
       },
     });
@@ -103,7 +99,6 @@ function getUserId() {
   }
 }
 
-// Get user's top artists
 function getTopArtists() {
   $('#artist-button').addClass("loading");
   if (access_token) {
@@ -120,12 +115,14 @@ function getTopArtists() {
         $('#artist-button').removeClass("loading");
         $('#results').empty();
         $('#results-header').html('<h2>Top Artists</h2>');
-        response.items.map((item, i) => {
+        let resultsHtml = '';
+        response.items.forEach((item, i) => {
           let name = item.name;
           let url = item.external_urls.spotify;
           let image = item.images[1].url;
-          $('#results').append('<div class="column wide artist item"><a href="' + url + '"target="_blank"><img src=' + image + '></a><h4 class="title">' + (i + 1) + '. ' + name + '</h4></div>');
+          resultsHtml += '<div class="column wide artist item"><a href="' + url + '" target="_blank"><img src="' + image + '"></a><h4 class="title">' + (i + 1) + '. ' + name + '</h4></div>';
         });
+        $('#results').html(resultsHtml);
 
         artistsdisplayed = true;
         songsdisplayed = false;
@@ -158,21 +155,34 @@ function getTopTracks() {
         playlist_uris = [];
         $('#results').empty();
         $('#results-header').html('<h2>Top Tracks</h2>');
-        response.items.map((item, i) => {
-          playlist_uris.push(item.uri);
-          let trackName = item.name;
-          let artistName = item.artists[0].name;
-          let url = item.external_urls.spotify;
-          let image = item.album.images[1].url;
-          $('#results').append('<div class="column wide track item"><a href="' + url + '" target="_blank"><img src=' + image
-          + '></a><h4>' + (i + 1) + '. ' + trackName + ' <br>' + artistName + ' </h4></div>');
-        });
+        let resultsHtml = '';
+
+        if (response.items.length === 0) {
+          resultsHtml = '<p>No top tracks found.</p>';
+        } else {
+          response.items.forEach((item, i) => {
+            playlist_uris.push(item.uri);
+            let trackName = item.name;
+            let artistName = item.artists[0].name;
+            let url = item.external_urls.spotify;
+            let image = item.album.images[1].url;
+            resultsHtml += '<div class="column wide track item"><a href="' + url + '" target="_blank"><img src="' + image + '"></a><h4>' + (i + 1) + '. ' + trackName + ' <br>' + artistName + ' </h4></div>';
+          });
+        }
+
+        $('#results').html(resultsHtml);
+
         songsdisplayed = true;
         artistsdisplayed = false;
         checkWidth();
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        ifError(jqXHR.status);
+        if (jqXHR.status === 401) {
+          ifError(jqXHR.status);
+        } else {
+          $('#track-button').removeClass("loading");
+          $('#results').html('<p>Error retrieving top tracks. Please try again later.</p>');
+        }
       },
     });
   } else {
@@ -184,10 +194,20 @@ function getTopTracks() {
 function ifError(error) {
   retryLogin();
   disableControls();
-  alert('Unable to authorize through Spotify Web API (Error ' + error + '). Please try logging in again.');
+  let errorMessage;
+  switch (error) {
+    case 401:
+      errorMessage = 'Unauthorized. Please log in to Spotify.';
+      break;
+    case 429:
+      errorMessage = 'Too many requests. Please try again later.';
+      break;
+    default:
+      errorMessage = 'Unable to authorize through Spotify Web API. Please try logging in again.';
+  }
+  alert(errorMessage);
 }
 
-// retryLogin mechanism
 function retryLogin() {
   $('#instructions').css('display', 'block');
   $('#login').css('display', 'block');
